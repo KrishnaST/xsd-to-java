@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fss.aeps.jaxb.HeadType;
 import com.fss.aeps.jaxb.PayConstant;
@@ -24,7 +23,7 @@ import com.fss.aeps.util.AccountIFSC;
 import com.fss.aeps.util.AccountIFSCCollector;
 import com.fss.aeps.util.DeviceTagMap;
 
-@Service
+//@Service
 public class TransactionService {
 
 	@Autowired

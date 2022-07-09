@@ -52,8 +52,8 @@ public class ScheduledHeartbeat {
 			headType.setMsgId(Generator.newRandomTxnId(appConfig.participationCode));
 			headType.setOrgId(appConfig.orgId);
 			headType.setTs(new Date());
-			headType.setVer(appConfig.impsVersion);
-			headType.setProdType(ProdType.IMPS);
+			headType.setVer(appConfig.productVersion);
+			headType.setProdType(ProdType.AEPS);
 
 			final PayTrans payTrans = new PayTrans();
 			payTrans.setRefId(Generator.newRandomTxnId(appConfig.participationCode));

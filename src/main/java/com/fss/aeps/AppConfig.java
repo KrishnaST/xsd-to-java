@@ -54,8 +54,8 @@ public class AppConfig {
 	@Autowired
 	private ApplicationContext context;
 
-	@Value("${imps.version}")
-	public String impsVersion;
+	@Value("${product.version}")
+	public String productVersion;
 
 	@Value("${orgId}")
 	public String orgId;
@@ -99,23 +99,26 @@ public class AppConfig {
 	@Value("${server.http.port:#{0}}")
 	int optionalHttpPort;
 
-	@Autowired
+	//@Autowired
+	public ConfigRepository configRepository;
+	
+	//@Autowired
 	private CbsToNpciResponseCodesRepository cbsToNpciResponseCodesRepository;
 
-	@Autowired
+	//@Autowired
 	private NpciToAcquirerResponseCodesRepository npciToAcquirerResponseCodesRepository;
 
 	@Bean("cbsToNpciResponseMapper")
 	public Mapper getCbsToNpciResponseMapper() throws IOException {
 		Map<String, String> map = new HashMap<>();
-		cbsToNpciResponseCodesRepository.findAll().forEach(c -> map.put(c.getCbsCode(), c.getNpciCode()));
+		//cbsToNpciResponseCodesRepository.findAll().forEach(c -> map.put(c.getCbsCode(), c.getNpciCode()));
 		return new Mapper(map);
 	}
 
 	@Bean("npciToAcquirerResponseMapper")
 	public Mapper getNpciToAcquirerResponseCodesMapper() throws IOException {
 		Map<String, String> map = new HashMap<>();
-		npciToAcquirerResponseCodesRepository.findAll().forEach(c -> map.put(c.getNpciCode(), c.getAcquirerCode()));
+		//npciToAcquirerResponseCodesRepository.findAll().forEach(c -> map.put(c.getNpciCode(), c.getAcquirerCode()));
 		return new Mapper(map);
 	}
 
@@ -124,8 +127,7 @@ public class AppConfig {
 		return new XMLSigner(signerKeystoreLocation, signerKeystorePassword, signerKeyAlias);
 	}
 
-	@Autowired
-	public ConfigRepository configRepository;
+
 
 	@Bean(name = "threadpool")
 	public ThreadPoolExecutor getExecutor() {
@@ -195,8 +197,8 @@ public class AppConfig {
 		head.setMsgId(Generator.newRandomTxnId(participationCode));
 		head.setOrgId(orgId);
 		head.setTs(new Date());
-		head.setVer(impsVersion);
-		head.setProdType(ProdType.IMPS);
+		head.setVer(productVersion);
+		head.setProdType(ProdType.AEPS);
 		return head;
 	}
 

@@ -2,6 +2,8 @@ package com.fss.aeps;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -11,7 +13,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+import com.fss.aeps.util.XMLSigner;
+
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = { 
@@ -20,9 +24,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 		HibernateJpaAutoConfiguration.class })
 @ComponentScan
 @ServletComponentScan
-@EnableJpaRepositories(considerNestedRepositories = true)
+//@EnableJpaRepositories(considerNestedRepositories = true)
 public class Application {
 
+	private static final Logger logger = LoggerFactory.getLogger(Application.class);
+	
 	public static void main(String[] args) throws IOException {
 		System.setProperty("jdk.tls.ephemeralDHKeySize", "2048");
 		System.setProperty("jdk.tls.rejectClientInitiatedRenegotiation", "true");
@@ -30,6 +36,7 @@ public class Application {
 		ApplicationContext context = new SpringApplicationBuilder(Application.class)
 				//.initializers(new ApplicationInitializer())
 				.run();
-		System.out.println(context);
+		logger.info("context initialized : "+context);
+		logger.info("xml signer initialized : "+context.getBean(XMLSigner.class));
 	}
 }
