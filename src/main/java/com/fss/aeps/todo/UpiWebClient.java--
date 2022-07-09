@@ -1,0 +1,22 @@
+package com.sil.imps.todo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.sil.imps.jaxb.Ack;
+import com.sil.imps.jaxb.ReqPay;
+
+import reactor.core.publisher.Mono;
+
+public class UpiWebClient {
+
+	@Autowired
+	private UpiWebClientBuilder builder;
+	
+	
+	public Mono<Ack> pay(ReqPay reqPay, String version, String txnid) {
+		return this.builder.getWebClient().get()
+				.uri("/ReqPay/{version}/urn:txnid:{txnid}", version, txnid)
+						.retrieve().bodyToMono(Ack.class);
+	}
+	
+}
