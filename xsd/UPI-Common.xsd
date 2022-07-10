@@ -16,6 +16,7 @@
 			<xs:enumeration value="PASSPORT" />
 			<xs:enumeration value="VOTERID" />
 			<xs:enumeration value="DRIVINGLICENSE" />
+			<xs:enumeration value="SHGACC" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -147,6 +148,7 @@
 			<xs:enumeration value="RespFxRate" />
 			<xs:enumeration value="Booking" />
 			<xs:enumeration value="ValCust" />
+			<xs:enumeration value="ReqMapperConfirmation" />
 			<!-- Added for Mandate Notification -->
 			<xs:enumeration value="MandateNotification" />
 			<!--Added for KYC -->
@@ -186,6 +188,7 @@
 			<xs:enumeration value="CHECK" />
 			<xs:enumeration value="HISTORY" />
 			<!-- Mobile Mapper Addition End -->
+			<xs:enumeration value="SHG" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -217,6 +220,8 @@
 			<xs:enumeration value="TELECOM" />
 			<xs:enumeration value="cardAccpTrId" />
 			<xs:enumeration value="cardAccIdCode" />
+			<xs:enumeration value="posEntryCode" />
+			<xs:enumeration value="posServCdnCode" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -262,6 +267,8 @@
 			<xs:enumeration value="NRO" />
 			<xs:enumeration value="UIDTOKEN" />
 			<xs:enumeration value="VID" />
+			<xs:enumeration value="CIF" />
+			<xs:enumeration value="REFKEY" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -414,6 +421,13 @@
 		</xs:restriction>
 
 	</xs:simpleType>
+		<xs:simpleType name="mapperIdType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MOBILE" />
+			<xs:enumeration value="NUMERICID" />
+		</xs:restriction>
+
+	</xs:simpleType>
 
 	<!-- mobile mapper changes start -->
 	<!-- xs:simpleType name="mobileMapperIdType">
@@ -504,6 +518,9 @@
 			<xs:enumeration value="UIDAI" />
 			<xs:enumeration value="PANAADHAAR" />
 			<xs:enumeration value="ADVICE" />
+			<!-- GETADD API CHANGES 31.05.2021 -->
+			<xs:enumeration value="ID" />
+			<xs:enumeration value="VPA" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -604,6 +621,7 @@
 	<xs:simpleType name="respPType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="UPIMANDATE" />
+			<xs:enumeration value="UPIVOUCHER" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -644,6 +662,7 @@
 			<xs:enumeration value="12" />
 			<xs:enumeration value="13" />
 			<!-- ATM END-->
+			<xs:enumeration value="19" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -757,6 +776,8 @@
 			<xs:enumeration value="INB" />
 			<xs:enumeration value="CHQ" />
 			<xs:enumeration value="ATM" />
+			<xs:enumeration value="IVR" />
+			<xs:enumeration value="MOB" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="respPanStatus">
@@ -787,6 +808,7 @@
 		<xs:attribute type="xs:string" name="msgId" use="required" />
 		<xs:attribute type="xs:string" name="prodType" use="required" />
 		<xs:attribute type="xs:string" name="destinationOrgId" />
+		<xs:attribute type="xs:boolean" name="aepsOld" />
 	</xs:complexType>
 
 
@@ -844,6 +866,18 @@
 		<xs:attribute type="xs:string" name="amt" />
 		<xs:attribute type="upi:fndIndi" name="fndIndi" />
 		<xs:attribute type="upi:channelType" name="channel" />
+	</xs:complexType>
+	<!-- Shreya Changes for ReqMapperConfirmation API -->
+	<xs:complexType name="txnConfirmationType">
+	<xs:sequence>
+			<xs:element name="Refs" type="upi:mapperConfRefType" minOccurs="0"/>
+			<xs:element name="Consent" type="upi:consentType" minOccurs="0" />
+	</xs:sequence>
+		<xs:attribute type="xs:string" name="note" use="optional" />
+		<xs:attribute type="xs:string" name="orgStatus" use="required" />
+		<xs:attribute type="xs:string" name="orgErrorCode" use="optional" />
+		<xs:attribute type="upi:opType" name="op" use="required" />
+		<xs:attribute type="upi:mapperIdType" name="idType" use="required" />
 	</xs:complexType>
 	<xs:complexType name="payerInfoType">
 		<xs:simpleContent>
@@ -908,21 +942,20 @@
 			<xs:enumeration value="INACTIVE" />
 			<xs:enumeration value="BLOCK" />
 			<xs:enumeration value="UNBLOCK" />
+			<xs:enumeration value="DEREGISTER" />
 		</xs:restriction>
 	</xs:simpleType>
-
 	<xs:simpleType name="regIdStatusType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="BLOCKED" />
 			<xs:enumeration value="ACTIVE" />
 			<xs:enumeration value="INACTIVE" />
 			<xs:enumeration value="NEW" />
+			<xs:enumeration value="DEREGISTER" />
 		</xs:restriction>
 	</xs:simpleType>
 
 	<!-- mobile mapper end -->
-
-	
 	<xs:complexType name="respTypeValCust">
 		<xs:sequence>
 			<xs:element name="RespIdDetails" type="upi:respIdDetails" minOccurs="0"
@@ -1098,6 +1131,7 @@
 		<xs:attribute type="upi:opType" name="op" use="optional" />
 		<!-- xs:attribute type="upi:mobileMapperIdType" name="idType" use="optional" /-->
 		<!-- Added for mobile mapper end -->
+		<xs:attribute type="xs:string" name="addr" />
 	</xs:complexType>
 
 	<xs:simpleType name="dealtTypeType">
@@ -1214,7 +1248,7 @@
 		<xs:attribute type="xs:string" name="cmId" use="optional" />
 		<!-- mobile mapper end -->
 	</xs:complexType>
-
+	
 	<xs:complexType name="respType">
 		<xs:sequence>
 			<xs:element name="Ref" maxOccurs="unbounded" minOccurs="0"
@@ -1240,6 +1274,7 @@
 		<xs:sequence>
 			<xs:element name="Merchant" type="upi:merchantType" />
 			<xs:element type="upi:featureSupported" name="FeatureSupported" />
+		    <xs:element name="Amount" type="upi:amountType" />
 		</xs:sequence>
 		<xs:attribute type="xs:string" name="reqMsgId" />
 		<xs:attribute type="xs:string" name="result" />
@@ -1350,6 +1385,7 @@
 			use="optional" />
 		<xs:attribute name="type" type="xs:string" use="optional" />
 		<xs:attribute name="blockFund" type="upi:blockFund" />
+		<xs:attribute type="xs:string" name="uuid" />
 
 	</xs:complexType>
 
@@ -1560,8 +1596,18 @@
 		<xs:attribute name="name" type="xs:string"/>
 		<xs:attribute name="type" type="upi:consentTypeEnum"/>
 		<xs:attribute name="value" type="xs:string"/>	
+		<xs:attribute name="prevVpa" type="xs:string"/>
 	</xs:complexType>
-	
+	<xs:complexType name="mapperConfRefType">
+		<xs:attribute type="xs:string" name="type" use="required" />
+		<xs:attribute type="xs:string" name="regName" use="optional" />
+		<xs:attribute type="xs:string" name="addr" use="optional" />
+		<xs:attribute type="xs:string" name="cmId" use="optional" />
+		<xs:attribute type="xs:string" name="code" use="optional" />	
+		<xs:attribute type="xs:string" name="respCode" use="optional" />	
+		<xs:attribute type="upi:channelType" name="channel" use="required" />
+		<xs:attribute type="upi:regIdDetailsSetStatusType" name="status" use="required" />					
+	</xs:complexType>
 	<xs:simpleType name="consentTypeEnum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="PAN" />
@@ -1750,5 +1796,30 @@
 				maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
-
+	
+	<xs:complexType name="SHGInfo">
+		<xs:sequence>
+			<xs:element name="Detail" maxOccurs="50" minOccurs="0">
+				<xs:complexType>
+					<!-- <xs:sequence>
+						<xs:element name="Ref" maxOccurs="50" minOccurs="0" type="upi:ref" />
+						<xs:element name="Consent" type="upi:consentType"
+							minOccurs="0" />							
+					</xs:sequence> -->
+					<xs:attribute type="xs:string" name="id" />
+					<xs:attribute type="upi:signatoryTypeEnum" name="type" />
+					<xs:attribute type="xs:string" name="UIDToken" />
+					<xs:attribute type="xs:string" name="custRef" />
+				</xs:complexType>
+		
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="signatoryTypeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Signatory1" />
+			<xs:enumeration value="Signatory2" />
+			<xs:enumeration value="Signatory3" />
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

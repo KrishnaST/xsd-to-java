@@ -30,9 +30,9 @@ public class Application {
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 	
 	public static void main(String[] args) throws IOException {
-		System.setProperty("jdk.tls.ephemeralDHKeySize", "2048");
-		System.setProperty("jdk.tls.rejectClientInitiatedRenegotiation", "true");
-		System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "false");
+		//System.setProperty("jdk.tls.ephemeralDHKeySize", "2048");
+		//System.setProperty("jdk.tls.rejectClientInitiatedRenegotiation", "true");
+		//System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "false");
 		ApplicationContext context = new SpringApplicationBuilder(Application.class)
 				//.initializers(new ApplicationInitializer())
 				.run();

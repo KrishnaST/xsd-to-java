@@ -8,11 +8,11 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sil</groupId>
-	<artifactId>imps.switch</artifactId>
+	<artifactId>aeps.switch</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>imps.switch</name>
-	<description>IMPS XML Switch</description>
+	<name>aeps.switch</name>
+	<description>AEPS XML Switch</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

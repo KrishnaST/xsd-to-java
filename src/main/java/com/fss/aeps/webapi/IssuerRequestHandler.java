@@ -38,7 +38,7 @@ import reactor.core.publisher.Mono;
 
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 @RestController
-@RequestMapping("imps")
+@RequestMapping("aeps")
 public class IssuerRequestHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(IssuerRequestHandler.class);

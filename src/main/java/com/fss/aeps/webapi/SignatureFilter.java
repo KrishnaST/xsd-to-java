@@ -55,46 +55,57 @@ public class SignatureFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
-		final String contextPath = ((HttpServletRequest) servletRequest).getRequestURI();
-		
-		if(!contextPath.startsWith("/imps/")) {
-			chain.doFilter(servletRequest, servletResponse);
-			return;
-		}
-		
-		final byte[] requestBytes = servletRequest.getInputStream().readAllBytes();
-		final HttpServletRequest wrappedRequest = ServletUtils.getWrappedHttpServletRequest(servletRequest, requestBytes);
 		try {
-			final Document requestDocument = XMLUtils.bytesToDocument(requestBytes);
-			final boolean isValidSignature = XMLUtils.validateXMLDigitalSignature(npciSignerPublicKey, requestDocument);
-			final NodeList signatureNodes = requestDocument.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
-			if(signatureNodes.getLength() > 0) {
-				signatureNodes.item(0).getParentNode().removeChild(signatureNodes.item(0));
+			final String contextPath = ((HttpServletRequest) servletRequest).getRequestURI();
+			
+			if(!contextPath.startsWith("/aeps/")) {
+				logger.info("rejected signature check for context path : "+contextPath);
+				chain.doFilter(servletRequest, servletResponse);
+				return;
 			}
-			logger.info("isValidSignature : " + isValidSignature);
-			logger.info("request from npci : \r\n"+XMLUtils.documentToFormattedString(requestDocument));
-			if (!isValidSignature) {
-				final Element head = (Element) requestDocument.getElementsByTagName("Head").item(0);
-				throw new InvalidXmlSignatureException("invalid xml signature for msgId : "+head.getAttribute("msgId"));
+			
+			final byte[] requestBytes = servletRequest.getInputStream().readAllBytes();
+			logger.trace("request bytes : "+ByteHexUtil.byteToHex(requestBytes));
+			final HttpServletRequest wrappedRequest = ServletUtils.getWrappedHttpServletRequest(servletRequest, requestBytes);
+			try {
+				final Document requestDocument = XMLUtils.bytesToDocument(requestBytes);
+				logger.info("request from npci : \r\n"+XMLUtils.documentToFormattedString(requestDocument));
+				final boolean isValidSignature = XMLUtils.validateXMLDigitalSignature(npciSignerPublicKey, requestDocument);
+				final NodeList signatureNodes = requestDocument.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+				if(signatureNodes.getLength() > 0) {
+					signatureNodes.item(0).getParentNode().removeChild(signatureNodes.item(0));
+				}
+				logger.info("isValidSignature : " + isValidSignature);
+				if (!isValidSignature) {
+					final Element head = (Element) requestDocument.getElementsByTagName("Head").item(0);
+					throw new InvalidXmlSignatureException("invalid xml signature for msgId : "+head.getAttribute("msgId"));
+				}
+				logger.info("signature verified.");
+			} catch (InvalidXmlSignatureException e) {
+				logger.error(e.getMessage(), e);
+				((HttpServletResponse) servletResponse).sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+				chain.doFilter(wrappedRequest, servletResponse);
+				return;
 			}
-			logger.info("signature verified.");
-		} catch (InvalidXmlSignatureException e) {
+			
+			//remove latter
+			//((HttpServletResponse) servletResponse).sendError(HttpStatus.UNAUTHORIZED.value(), "throwing manually");
+			//if(0 == 0)return;
+			
+			
+			final ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
+			final HttpServletResponse wrappedResponse = ServletUtils.getWrappedHttpServletResponse(servletResponse, responseOutputStream);
+			chain.doFilter(wrappedRequest, wrappedResponse);
+			final byte[] responseBytes = responseOutputStream.toByteArray();
+			logger.trace("response bytes : "+ByteHexUtil.byteToHex(responseBytes));
+			final Document responseDocument = XMLUtils.bytesToDocument(responseBytes);
+			logger.info("response to npci: \r\n"+XMLUtils.documentToFormattedString(responseDocument));
+			//final Document signeddocument = signer.generateXMLDigitalSignature(responseDocument);
+			//final byte[] signedxml = XMLUtils.documentToByteArray(signeddocument);
+			servletResponse.getOutputStream().write(responseBytes);
+		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			((HttpServletResponse) servletResponse).sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
-			chain.doFilter(wrappedRequest, servletResponse);
-			return;
 		}
-
-		final ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
-		final HttpServletResponse wrappedResponse = ServletUtils.getWrappedHttpServletResponse(servletResponse, responseOutputStream);
-		chain.doFilter(wrappedRequest, wrappedResponse);
-		final byte[] responseBytes = responseOutputStream.toByteArray();
-		logger.info("response bytes : "+ByteHexUtil.byteToHex(responseBytes));
-		final Document responseDocument = XMLUtils.bytesToDocument(responseBytes);
-		logger.info("response to npci: \r\n"+XMLUtils.documentToFormattedString(responseDocument));
-		//final Document signeddocument = signer.generateXMLDigitalSignature(responseDocument);
-		//final byte[] signedxml = XMLUtils.documentToByteArray(signeddocument);
-		servletResponse.getOutputStream().write(responseBytes);
 	}
 
 	@Override

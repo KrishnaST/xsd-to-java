@@ -13,11 +13,8 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11Nio2Protocol;
-import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,25 +154,14 @@ public class AppConfig {
 		SignatureFilter filter = new SignatureFilter(xmlSigner, npciSignerPublicKey);
 		FilterRegistrationBean<SignatureFilter> bean = new FilterRegistrationBean<>();
 		bean.setFilter(filter);
-		bean.setUrlPatterns(Arrays.asList("/*", "/imps", "/imps/*"));
+		bean.setUrlPatterns(Arrays.asList("/*", "/aeps", "/aeps/*"));
 		return bean;
 	}
 
+	
 	@Bean
 	public ServletWebServerFactory servletContainer() {
-		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
-
-			@Override
-			protected void postProcessContext(Context context) {
-				SecurityConstraint securityConstraint = new SecurityConstraint();
-				securityConstraint.setUserConstraint("CONFIDENTIAL");
-				SecurityCollection collection = new SecurityCollection();
-				collection.addPattern("/*");
-				securityConstraint.addCollection(collection);
-				context.addConstraint(securityConstraint);
-			}
-		};
-
+		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
 		if (optionalHttpPort != 0) {
 			logger.info("http service started on optionalHttpPort provided  : " + optionalHttpPort);
 			Http11Nio2Protocol protocol = new Http11Nio2Protocol();
