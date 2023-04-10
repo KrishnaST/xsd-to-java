@@ -1,2 +1,2 @@
-# aeps.switch.async
-AEPS XML SWITCH
+# xsd to java conversion using XJC tool
+xsd to java
